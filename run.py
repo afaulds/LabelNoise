@@ -1,12 +1,14 @@
 import numpy as np
+import numpy.linalg as la
 from scipy.spatial.distance import pdist, squareform
+import time
 
 
 def main():
-    X = np.matrix("26 16; 28 18; 31 21; 46 36; 47 37; 50 40; 51 41; 53 43")
+    X = np.matrix('26 16; 28 18; 31 21; 46 36; 47 37; 50 40; 51 41; 53 43')
     # a X b
-    Y = np.matrix("1 -1; -1 1; 1 -1; -1 1; -1 1; 1 -1; -1 1; -1 1")
-    # c X b
+    Y = np.matrix('1 -1; -1 1; 1 -1; -1 1; -1 1; 1 -1; -1 1; -1 1')
+    # a X c
 
     mu = 0.001
     mu_max = 1000000
@@ -14,67 +16,117 @@ def main():
     epsilon = 0.000001
     iter_max = 1000
     iter = 0
-    lambda1 = 0.1 #FIXME
-    lambda2 = 0.1 #FIXME
-    lambda3 = 0.1 #FIXME
+    lambda1 = 1
+    lambda2 = 1
+    lambda3 = 1
 
     # Get shapes of matriaaces
-    a = X.shape[0] # number of features
-    b = X.shape[1] # number of training examples
-    c = Y.shape[0] # number of classes
+    a = X.shape[0] # number of training examples
+    b = X.shape[1] # number of features
+    c = Y.shape[1] # number of classes
 
-    Z = np.zeros((c, a))
+    Z = np.zeros((b, c))
     J = Z.copy()
-    E = np.zeros((c, b))
-    B = np.zeros((c, b))
-    M1 = np.zeros((c, b))
-    M2 = np.zeros((c, b))
-    M3 = np.zeros((c, a))
-
-    pi_func = np.vectorize(lambda t: min(max(t, -1), 1))
+    E = np.zeros((a, c))
+    B = np.zeros((a, c))
+    M1 = np.zeros((a, c))
+    M2 = np.zeros((a, c))
+    M3 = np.zeros((b, c))
+    L = calc_L(X) # a X a
+    I = np.identity(b) # b X b
 
     converge = False
     while not converge:
-        L = equ3(X)
-        T = ??
-        W = REPLACE
-        Z = equ10(T)
-        E = REPLACE
-        J = np.linalg.inv(2 * lambda2 * np.transpose(X) * L * X)
+        time.sleep(0.1)
+        print("")
+        print("{}".format(iter))
 
-        B_carot = (mu * (Y - E + np.matmul(J, X)) + M1 - M2) / (2 * mu)
-        B = pi_func(B_carot)
+        Z_new = update_Z(J, Z, M3, mu, lambda1)
 
-        A1 = Y - B - E #(c x b)
-        A2 = B - np.matmul(J, X) #(c x b)
-        A3 = Z - J #()
-        M1 = M1 + mu * A1 #(c x b)
-        M2 = M2 + mu * A2 #()
-        M3 = M3 + mu * A3 #()
+        E_new = update_E(B, Y, M1, mu, lambda3)
+
+        J_new = update_J(B, I, L, X, Z, M2, M3, lambda2, mu)
+
+        B_new = update_B(E, J, X, Y, M1, M2, mu)
+
+        Z = Z_new.copy()
+        E = E_new.copy()
+        J = J_new.copy()
+        B = B_new.copy()
+
+        A1 = Y - B - E # a X c
+        A2 = B - X * J # a X c
+        A3 = Z - J # b X c
+        M1 = M1 + mu * A1 # a X c
+        M2 = M2 + mu * A2 # a X c
+        M3 = M3 + mu * A3 # b X c
         mu = min(rho * mu, mu_max)
         iter += 1
-        if iter < iter_max:
+        print("Y - B - E = {}".format(la.norm(A1, 'fro')))
+        print("    Y - B = {}".format(la.norm(Y-B, 'fro')))
+        print("    Y - E = {}".format(la.norm(Y-E, 'fro')))
+        print("B - X * J = {}".format(la.norm(A2, 'fro')))
+        print("    Z - J = {}".format(la.norm(A3, 'fro')))
+        if iter > iter_max:
             converge = True
-        if norm(A1) < epsilon:
+        if la.norm(A1, 'fro') < epsilon:
             converage = True
-        if norm(A2) < epsilon:
+        if la.norm(A2, 'fro') < epsilon:
             converage = True
-        if norm(A3) < epsilon:
+        if la.norm(A3, 'fro') < epsilon:
             converage = True
+        #if iter > 2:
+        #    exit()
 
 
-def equ3(X):
+def update_Z(J, Z, M3, mu, lambda1):
+    tau_func = np.vectorize(lambda t: max(t-tau, 0))
+    tau = 1.0 / (2 * lambda1 + mu)
+    T_carot = tau * (mu * J - M3)
+    U, S, V = la.svd(T_carot)
+    S_carot = tau_func(np.diag(S))
+    return U * S_carot * V
+
+
+def calc_L(X):
     s = 1
     pairwise_dists = squareform(pdist(X, 'euclidean'))
     W_carot = np.exp(-pairwise_dists ** 2 / (2 * s ** 2))
+
     D = np.zeros(W_carot.shape)
     D = np.diag(np.sum(W_carot, axis=0))
-    print(D)
     return D - W_carot
 
 
-def equ10(T):
-    u, s, v = np.linalg.svd(T_carot)
+def update_E(B, Y, M1, mu, lambda3):
+    M_carot = Y - B + M1 / mu
+    eta = lambda3 / mu
 
-if __name__ == "__main__":
+    num_rows = M_carot.shape[0]
+    num_cols = M_carot.shape[1]
+
+    M_norm = np.zeros(num_rows)
+    for i in range(num_rows):
+        M_norm[i] = la.norm(M_carot[i], 2)
+    for i in range(num_rows):
+        for j in range(num_cols):
+            if M_norm[i] > eta:
+                M_carot[i, j] = M_carot[i, j] * (M_norm[i] * - eta) / M_norm[i]
+            else:
+                M_carot[i, j] = 0
+    return M_carot
+
+
+def update_J(B, I, L, X, Z, M2, M3, lambda2, mu):
+    return la.inv(2 * lambda2 * np.transpose(X) * L * X + mu * np.transpose(X) * X + mu * I) * \
+            (np.transpose(X) * M2 + M3 + mu * np.transpose(X) * B + mu * Z)
+
+
+def update_B(E, J, X, Y, M1, M2, mu):
+    pi_func = np.vectorize(lambda t: min(max(t, -1), 1))
+    B_carot = (mu * (Y - E + X * J) + M1 - M2) / (2 * mu)
+    return pi_func(B_carot)
+
+
+if __name__ == '__main__':
     main()
