@@ -8,6 +8,7 @@ def main():
     #agaricus_data()
     #breast_data()
     simple_data()
+    simple2_data()
 
 
 def agaricus_data():
@@ -41,7 +42,7 @@ def agaricus_data():
 
 
 def simple_data():
-    num = 200
+    num = 500
     X = np.zeros((num, 2))
     y = np.zeros(num)
     for i in range(num):
@@ -56,6 +57,29 @@ def simple_data():
         'y': y
     }
     with open('data/Simple.pkl', 'wb') as outfile:
+        outfile.write(pickle.dumps(data))
+
+
+def simple2_data():
+    num = 500
+    X = np.zeros((num, 2))
+    y = np.zeros(num)
+    for i in range(num):
+        X[i][0] = random.randrange(100)
+        X[i][1] = random.randrange(100)
+        if X[i][0] + X[i][1] < 50:
+            y[i] = 0
+        elif X[i][0] + X[i][1] < 100:
+            y[i] = 1
+        elif X[i][0] + X[i][1] < 150:
+            y[i] = 0
+        else:
+            y[i] = 1
+    data = {
+        'X': X,
+        'y': y
+    }
+    with open('data/Simple2.pkl', 'wb') as outfile:
         outfile.write(pickle.dumps(data))
 
 
