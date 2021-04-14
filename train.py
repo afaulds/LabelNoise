@@ -48,7 +48,7 @@ def init():
 def run_noise_removal():
     print("-------------------------------------")
     # Read from standardized file.
-    with open("data/Simple2.pkl", "rb") as infile:
+    with open("data/Unbalanced.pkl", "rb") as infile:
         data = pickle.loads(infile.read())
 
     # Create training and test set.
