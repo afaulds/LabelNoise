@@ -9,9 +9,11 @@ def main():
     #breast_data()
     simple_data()
     simple2_data()
+    unbalanced_data(0.25)
 
 
 def agaricus_data():
+    print("Create agaricus data")
     feature_info = [
         ('edible', 'cat', 'output'),
         ('cap-shape', 'cat'),
@@ -42,6 +44,7 @@ def agaricus_data():
 
 
 def simple_data():
+    print("Create simple data")
     num = 500
     X = np.zeros((num, 2))
     y = np.zeros(num)
@@ -61,6 +64,7 @@ def simple_data():
 
 
 def simple2_data():
+    print("Create simple2")
     num = 500
     X = np.zeros((num, 2))
     y = np.zeros(num)
@@ -83,7 +87,39 @@ def simple2_data():
         outfile.write(pickle.dumps(data))
 
 
+def unbalanced_data(pos_percent):
+    print("Create unbalanced data")
+    num = 500
+    features = np.zeros(2)
+    X = np.zeros((num, 2))
+    y = np.zeros(num)
+    i = 0
+    while i < num:
+        features[0] = random.randrange(100)
+        features[1] = random.randrange(100)
+        if features[0] + features[1] < 50:
+            label = 0
+        elif features[0] + features[1] < 100:
+            label = 1
+        elif features[0] + features[1] < 150:
+            label = 0
+        else:
+            label = 1
+        if label == 0 or random.random() < pos_percent:
+            X[i][0] = features[0]
+            X[i][1] = features[1]
+            y[i] = label
+            i += 1
+    data = {
+        'X': X,
+        'y': y
+    }
+    with open('data/Unbalanced.pkl', 'wb') as outfile:
+        outfile.write(pickle.dumps(data))
+
+
 def breast_data():
+    print("Create breast data")
     feature_info = [
         ('y', 'cat', 'output'),
         ('x1', 'float'),
