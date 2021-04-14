@@ -2,7 +2,7 @@ import numpy as np
 import pickle
 
 
-class FeaureStandardizer:
+class FeatureStandardizer:
 
 
     def __init__(self, feature_info, file_name):
@@ -87,4 +87,3 @@ class FeaureStandardizer:
         }
         with open(name, 'wb') as outfile:
             outfile.write(pickle.dumps(data))
-

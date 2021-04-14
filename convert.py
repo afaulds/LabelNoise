@@ -1,4 +1,4 @@
-from FeaureStandardizer import FeaureStandardizer
+from FeatureStandardizer import FeatureStandardizer
 import random
 import numpy as np
 import pickle
@@ -37,7 +37,7 @@ def agaricus_data():
         ('population', 'cat'),
         ('habitat', 'cat'),
     ]
-    fs = FeaureStandardizer(feature_info, 'data/agaricus-lepiota.data')
+    fs = FeatureStandardizer(feature_info, 'data/agaricus-lepiota.data')
     fs.process('data/Agaricus.pkl')
 
 
