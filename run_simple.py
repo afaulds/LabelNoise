@@ -5,7 +5,7 @@ from sklearn import metrics
 import numpy as np
 import os
 from time import time
-from NoiseCorrection_v1 import NoiseCorrection
+from NoiseCorrection_v0 import NoiseCorrection
 import helper
 
 
