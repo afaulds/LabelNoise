@@ -16,6 +16,7 @@ class NoiseCorrection:
         self.theta = 0
         # Thread safe objects.
         manager = Manager()
+        self.Bc = manager.list(np.zeros(len(y)))
         self.Bx = manager.list(np.zeros(len(y)))
         self.H = manager.list(np.zeros(len(y)))
         self.Q = manager.list()
@@ -46,7 +47,7 @@ class NoiseCorrection:
         self.theta = 0
         for i in range(len(self.y)):
             self.r[i] = self.Bx[i]
-            if self.Bx[i] >= self.M / 2:
+            if self.Bc[i] >= self.M / 2:
                 self.theta += 1
 
     def get_noise_score(self):
@@ -110,12 +111,12 @@ class NoiseCorrection:
             i = test_index[p]
             c = y_prob[p][0]
             d = y_prob[p][1]
-            reverse_entropy = 1.0
-            if self.y[i] == y_scores[p]:
-                self.Q[m].append(i)
+            neg_entropy = 1.0
             if c > 0.0 and d > 0.0:
-                reverse_entropy = 1 + c * math.log2(c) + d * math.log2(d)
+                neg_entropy = 1 + c * math.log2(c) + d * math.log2(d)
             if self.y[i] != y_scores[p]:
-                self.Bx[i] += 0.5 + 0.5 * reverse_entropy
+                self.Bc[i] += 1
+                self.Bx[i] += 0.5 + 0.5 * neg_entropy
             else:
-                self.Bx[i] += 0.5 - 0.5 * reverse_entropy
+                self.Q[m].append(i)
+                self.Bx[i] += 0.5 - 0.5 * neg_entropy
