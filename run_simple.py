@@ -14,12 +14,12 @@ input_data = "data/Unbalanced.pkl"
 noise_percent = 0.1
 
 
-def main():
+def main2():
     scores = run_noise_removal()
     print(scores)
 
 
-def main2():
+def main():
     start_time = time()
     init()
     scores_agg = {}
