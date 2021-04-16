@@ -11,6 +11,9 @@ from NoiseCorrection import NoiseCorrection
 
 
 def main():
+    score_perfect, score_dirty, score_nonoise25, score_nonoise50, score_nonoise75, score_nonoise100, score_nonoise125, score_clean = run_noise_removal()
+
+def main2():
     start_time = time()
     init()
     a = []
@@ -20,10 +23,12 @@ def main():
     e = []
     f = []
     g = []
+    h = []
     for i in range(30):
-        score_perfect, score_dirty, score_nonoise50, score_nonoise75, score_nonoise100, score_nonoise125, score_clean = run_noise_removal()
+        score_perfect, score_dirty, score_nonoise25, score_nonoise50, score_nonoise75, score_nonoise100, score_nonoise125, score_clean = run_noise_removal()
         a.append(score_perfect)
         b.append(score_dirty)
+        c.append(score_nonoise25)
         c.append(score_nonoise50)
         d.append(score_nonoise75)
         e.append(score_nonoise100)
@@ -31,11 +36,12 @@ def main():
         g.append(score_clean)
     print("Average perfect   {:.2f} {:.2f}".format(np.mean(a), np.std(a)))
     print("Average dirty     {:.2f} {:.2f}".format(np.mean(b), np.std(b)))
-    print("Averagenonoise50  {:.2f} {:.2f}".format(np.mean(c), np.std(c)))
-    print("Averagenonoise75  {:.2f} {:.2f}".format(np.mean(d), np.std(d)))
-    print("Averagenonoise100 {:.2f} {:.2f}".format(np.mean(e), np.std(e)))
-    print("Averagenonoise125 {:.2f} {:.2f}".format(np.mean(f), np.std(f)))
-    print("Average clean     {:.2f} {:.2f}".format(np.mean(g), np.std(g)))
+    print("Averagenonoise25  {:.2f} {:.2f}".format(np.mean(c), np.std(c)))
+    print("Averagenonoise50  {:.2f} {:.2f}".format(np.mean(d), np.std(d)))
+    print("Averagenonoise75  {:.2f} {:.2f}".format(np.mean(e), np.std(e)))
+    print("Averagenonoise100 {:.2f} {:.2f}".format(np.mean(f), np.std(f)))
+    print("Averagenonoise125 {:.2f} {:.2f}".format(np.mean(g), np.std(g)))
+    print("Average clean     {:.2f} {:.2f}".format(np.mean(h), np.std(h)))
     end_time = time()
     print("Overall time: {}".format(end_time - start_time))
 
@@ -85,11 +91,16 @@ def run_noise_removal():
     # Find noisy elements
     nc = NoiseCorrection(X_train, y_train)
     nc.calculate_noise()
+    noise_set25 = nc.get_noise_index(0.25)
     noise_set50 = nc.get_noise_index(0.5)
     noise_set75 = nc.get_noise_index(0.75)
-    noise_set125 = nc.get_noise_index(1.25)
     noise_set100 = nc.get_noise_index()
+    noise_set125 = nc.get_noise_index(1.25)
     y_train_cleaned = nc.get_clean()
+
+    r = nc.get_noise_score()
+    print(r)
+    return
 
     # Remove noise 100
     all_index = range(len(y_train))
@@ -107,6 +118,14 @@ def run_noise_removal():
     score_nonoise100 = train_and_score(X_train_new, y_train_new, X_test, y_test)
     # Show score.
     print("Noise removed 100% score {:.3f}".format(score_nonoise100))
+
+    # Remove noise 25
+    all_index = range(len(y_train))
+    good_index = np.setdiff1d(all_index, noise_set25)
+    X_train_new = X_train[good_index]
+    y_train_new = y_train[good_index]
+    score_nonoise25 = train_and_score(X_train_new, y_train_new, X_test, y_test)
+    print("Noise removed 25% score {:.3f}".format(score_nonoise25))
 
     # Remove noise 75
     all_index = range(len(y_train))
@@ -143,7 +162,7 @@ def run_noise_removal():
     # Plot noise corrected training
     plot(X_train, y_train_cleaned, "output/step3.png")
 
-    return score_perfect, score_dirty, score_nonoise50, score_nonoise75, score_nonoise100, score_nonoise125, score_clean
+    return score_perfect, score_dirty, score_nonoise25, score_nonoise50, score_nonoise75, score_nonoise100, score_nonoise125, score_clean
 
 
 def randomize(percent, y, changed):
@@ -168,6 +187,8 @@ def train_and_score(X_train, y_train, X_test, y_test):
 
 
 def plot(X, y, file_name):
+    """
+    Plot
     x1 = []
     y1 = []
     x2 = []

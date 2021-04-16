@@ -16,8 +16,7 @@ class NoiseCorrection:
         self.theta = 0
         # Thread safe objects.
         manager = Manager()
-        self.Bc = manager.list(np.zeros(len(y)))
-        self.Be = manager.list(np.zeros(len(y)))
+        self.Bx = manager.list(np.zeros(len(y)))
         self.H = manager.list(np.zeros(len(y)))
         self.Q = manager.list()
         for i in range(self.M):
@@ -42,18 +41,18 @@ class NoiseCorrection:
             print("*", end="", flush=True)
         print("All complete.", flush=True)
 
-        # Calculate Be_total
-        Be_total = np.sum(self.Be)
-
         # Calculate r (noise) and theta (threshold)
         self.r = np.zeros(len(self.y))
         self.theta = 0
         for i in range(len(self.y)):
-            self.r[i] = self.Bc[i] + (1 - self.Be[i] / Be_total)
-            if self.Bc[i] >= self.M / 2:
+            self.r[i] = self.Bx[i]
+            if self.Bx[i] >= self.M / 2:
                 self.theta += 1
 
-    def get_noise_index(self, fracion=1.0):
+    def get_noise_score(self):
+        return self.r
+
+    def get_noise_set(self, fracion=1.0):
         all_index = range(len(self.y))
         sorted_index = [x for _,x in sorted(zip(self.r, all_index), reverse=True)]
         self.noise_set = sorted_index[0:int(self.theta * fracion)]
@@ -111,10 +110,12 @@ class NoiseCorrection:
             i = test_index[p]
             c = y_prob[p][0]
             d = y_prob[p][1]
-            if c > 0.0 and d > 0.0:
-                self.Be[i] -= c * math.log2(c) + d * math.log2(d)
-            if self.y[i] != y_scores[p]:
-                self.Bc[i] += 1
-            else:
+            reverse_entropy = 1.0
+            if self.y[i] == y_scores[p]:
                 self.Q[m].append(i)
-
+            if c > 0.0 and d > 0.0:
+                reverse_entropy = 1 + c * math.log2(c) + d * math.log2(d)
+            if self.y[i] != y_scores[p]:
+                self.Bx[i] += 0.5 + 0.5 * reverse_entropy
+            else:
+                self.Bx[i] += 0.5 - 0.5 * reverse_entropy
