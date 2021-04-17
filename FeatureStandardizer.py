@@ -4,15 +4,17 @@ import pickle
 
 class FeatureStandardizer:
 
-
-    def __init__(self, feature_info, file_name):
-        self.feature_info = feature_info
-        self.file_name = file_name
-
+    def __init__(self, struct_file_name, data_file_name):
+        self.feature_info = []
+        self.struct_file_name = struct_file_name
+        self.data_file_name = data_file_name
+        self.output_column = -1
+        self.output_positive = ''
 
     def process(self, save_file_name):
-        train_data = np.genfromtxt(self.file_name, dtype=['S5']*len(self.feature_info), delimiter=',', skip_header=False)
-        output_column = self.__get_output_column()
+        self.__read_struct()
+        print("Num features before: {}".format(len(self.feature_info)-1))
+        train_data = np.genfromtxt(self.data_file_name, dtype=['S100']*len(self.feature_info), delimiter=',', skip_header=False)
         num_rows = len(train_data)
         num_cols = len(train_data[0])
 
@@ -20,7 +22,7 @@ class FeatureStandardizer:
         num_expanded_cols = 0
         num_classes = 0
         for k in range(num_cols):
-            if k == output_column:
+            if k == self.output_column:
                 if len(cats[k]) == 2:
                     num_classes += 1
                 else:
@@ -31,6 +33,7 @@ class FeatureStandardizer:
                 else:
                     num_expanded_cols += len(cats[k])
         X = np.zeros((num_rows, num_expanded_cols))
+        print("Num classes: {}".format(num_classes))
         if num_classes == 1:
             y = np.zeros(num_rows)
         else:
@@ -39,10 +42,10 @@ class FeatureStandardizer:
         for i in range(num_rows):
             j = 0
             for k in range(num_cols):
-                if k == output_column:
+                if k == self.output_column:
                     m = cats[k][train_data[i][k]]
                     if num_classes == 1:
-                        y[i] = m
+                        y[i] = int(self.output_positive == train_data[i][k].decode('ascii'))
                     else:
                         y[i, m] = 1
                 else:
@@ -57,15 +60,23 @@ class FeatureStandardizer:
                         else:
                             X[i, j + m] = 1
                             j += len(cats[k])
+        print("Num features after: {}".format(X.shape[1]))
+        print("Num items: {}".format(X.shape[0]))
+        print("Num pos: {}".format(sum(y)))
+        print("Num neg: {}".format(sum(1-y)))
+        print("")
         self.__write_file(save_file_name, X, y)
 
-
-    def __get_output_column(self):
-        for i in range(len(self.feature_info)):
-            if len(self.feature_info[i]) == 3:
-                return i
-        return -1
-
+    def __read_struct(self):
+        with open(self.struct_file_name, "r") as infile:
+            i = 0
+            for line in infile:
+                items = line.strip("\n").split("\t")
+                self.feature_info.append((items[0], items[1]))
+                if len(items) == 3:
+                    self.output_column = i
+                    self.output_positive = items[2]
+                i += 1
 
     def __get_categories(self, train_data):
         cat_count = []
@@ -81,7 +92,6 @@ class FeatureStandardizer:
             else:
                 cat_count.append({0})
         return cat_count
-
 
     def __write_file(self, name, X, y):
         data = {

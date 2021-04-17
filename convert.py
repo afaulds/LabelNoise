@@ -5,52 +5,69 @@ import pickle
 
 
 def main():
-    mushroom_data()
+    ionosphere_data()
+    biodeg_data()
     krvskp_data()
+    mushroom_data()
+    sick_data()
     spambase_data()
     tictactoe_data()
     vote_data()
-    sick_data()
-    biodeg_data()
-    ionosphere_data()
     simple_data()
     simple2_data()
     unbalanced_data(0.25)
 
 
+def biodeg_data():
+    print('Create biodeg data')
+    fs = FeatureStandardizer('data/biodeg.struct', 'data/biodeg.csv')
+    fs.process('data/Biodeg.pkl')
+
+
 def mushroom_data():
-    print("Create agaricus data")
-    feature_info = [
-        ('edible', 'cat', 'output'),
-        ('cap-shape', 'cat'),
-        ('cap-surface', 'cat'),
-        ('cap-color', 'cat'),
-        ('bruises', 'cat'),
-        ('odor', 'cat'),
-        ('gill-attachment', 'cat'),
-        ('gill-spacing', 'cat'),
-        ('gill-size', 'cat'),
-        ('gill-color', 'cat'),
-        ('stalk-shape', 'cat'),
-        ('stalk-root', 'cat'),
-        ('stalk-surface-above-ring', 'cat'),
-        ('stalk-surface-below-ring', 'cat'),
-        ('stalk-color-above-ring', 'cat'),
-        ('stalk-color-below-ring', 'cat'),
-        ('veil-type', 'cat'),
-        ('veil-color', 'cat'),
-        ('ring-number', 'cat'),
-        ('ring-type', 'cat'),
-        ('spore-print-color', 'cat'),
-        ('population', 'cat'),
-        ('habitat', 'cat'),
-    ]
-    fs = FeatureStandardizer(feature_info, 'data/agaricus-lepiota.data')
+    print('Create mushroom data')
+    fs = FeatureStandardizer('data/agaricus-lepiota.struct', 'data/agaricus-lepiota.data')
     fs.process('data/Mushroom.pkl')
 
 
+def krvskp_data():
+    print('Create KR vs KP data')
+    fs = FeatureStandardizer('data/kr-vs-kp.struct', 'data/kr-vs-kp.data')
+    fs.process('data/Krvskp.pkl')
+
+
+def spambase_data():
+    print('Create spam base')
+    fs = FeatureStandardizer('data/spambase.struct', 'data/spambase.data')
+    fs.process('data/Spam.pkl')
+
+
+def tictactoe_data():
+    print('Create tic tac toe')
+    fs = FeatureStandardizer('data/tic-tac-toe.struct', 'data/tic-tac-toe.data')
+    fs.process('data/Tictactoe.pkl')
+
+
+def vote_data():
+    print('Create vote')
+    fs = FeatureStandardizer('data/house-votes-84.struct', 'data/house-votes-84.data')
+    fs.process('data/Vote.pkl')
+
+
+def sick_data():
+    print('Create sick')
+    fs = FeatureStandardizer('data/ann-train.struct', 'data/ann-train.data')
+    fs.process('data/Sick.pkl')
+
+
+def ionosphere_data():
+    print('Create ionosphere')
+    fs = FeatureStandardizer('data/ionosphere.struct', 'data/ionosphere.data')
+    fs.process('data/Ionosphere.pkl')
+
+
 def simple_data():
-    print("Create simple data")
+    print('Create simple data')
     num = 500
     X = np.zeros((num, 2))
     y = np.zeros(num)
@@ -65,12 +82,19 @@ def simple_data():
         'X': X,
         'y': y
     }
+    print("Num features before: 2")
+    print("Num classes: 1")
+    print("Num features after: 2")
+    print("Num items: {}".format(X.shape[0]))
+    print("Num pos: {}".format(sum(y)))
+    print("Num neg: {}".format(sum(1-y)))
+    print("")
     with open('data/Simple.pkl', 'wb') as outfile:
         outfile.write(pickle.dumps(data))
 
 
 def simple2_data():
-    print("Create simple2")
+    print('Create simple2')
     num = 500
     X = np.zeros((num, 2))
     y = np.zeros(num)
@@ -89,12 +113,19 @@ def simple2_data():
         'X': X,
         'y': y
     }
+    print("Num features before: 2")
+    print("Num classes: 1")
+    print("Num features after: 2")
+    print("Num items: {}".format(X.shape[0]))
+    print("Num pos: {}".format(sum(y)))
+    print("Num neg: {}".format(sum(1-y)))
+    print("")
     with open('data/Simple2.pkl', 'wb') as outfile:
         outfile.write(pickle.dumps(data))
 
 
 def unbalanced_data(pos_percent):
-    print("Create unbalanced data")
+    print('Create unbalanced data')
     num = 500
     features = np.zeros(2)
     X = np.zeros((num, 2))
@@ -120,35 +151,15 @@ def unbalanced_data(pos_percent):
         'X': X,
         'y': y
     }
+    print("Num features before: 2")
+    print("Num classes: 1")
+    print("Num features after: 2")
+    print("Num items: {}".format(X.shape[0]))
+    print("Num pos: {}".format(sum(y)))
+    print("Num neg: {}".format(sum(1-y)))
+    print("")
     with open('data/Unbalanced.pkl', 'wb') as outfile:
         outfile.write(pickle.dumps(data))
-
-
-def breast_data():
-    print("Create breast data")
-    feature_info = [
-        ('y', 'cat', 'output'),
-        ('x1', 'float'),
-        ('x2', 'float'),
-    ]
-    train_data = np.genfromtxt('data/BreastTissueRaw.txt', dtype=['i8', 'S5', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8', 'f8'], delimiter='\t', skip_header=True)
-    num_rows = train_data.shape[0]
-    num_cols = 9
-    num_classes = 6
-    x_class = {}
-    c = 0
-    X = np.zeros((num_rows, num_cols))
-    Y = -np.ones((num_rows, num_classes))
-    for i in range(num_rows):
-        for j in range(num_cols):
-            X[i, j] = train_data[i][j + 2]
-            if not train_data[i][1] in x_class:
-               x_class[train_data[i][1]] = c
-               c += 1
-            p = x_class[train_data[i][1]]
-            Y[i, p] = 1
-    write_file('data/BreastTissue.pkl', X, Y)
-
 
 
 if __name__ == '__main__':

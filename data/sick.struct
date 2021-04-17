@@ -1,0 +1,29 @@
+age	num
+sex	cat
+on thyroxine	cat
+query on thyroxine	cat
+on antithyroid medication	cat
+sick	cat	t
+pregnant	cat
+thyroid surgery	cat
+I131 treatment	cat
+query hypothyroid	cat
+query hyperthyroid	cat
+lithium	cat
+goitre	cat
+tumor	cat
+hypopituitary	cat
+psych	cat
+TSH measured	cat
+TSH	num
+T3 measured	cat
+T3	num
+TT4 measured	cat
+TT4	num
+T4U measured	cat
+T4U	num
+FTI measured	cat
+FTI	num
+TBG measured	cat
+TBG	num
+referral source	cat
