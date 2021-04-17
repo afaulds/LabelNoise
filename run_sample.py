@@ -5,7 +5,8 @@ from sklearn import metrics
 import numpy as np
 import os
 from time import time
-from NoiseCorrection_v0 import NoiseCorrection
+from NoiseCorrection_v0 as v0
+from NoiseCorrection_v1 as v1
 import helper
 
 
@@ -14,25 +15,9 @@ input_data = "data/Unbalanced.pkl"
 noise_percent = 0.1
 
 
-def main2():
+def main():
     scores = run_noise_removal()
     print(scores)
-
-
-def main():
-    start_time = time()
-    init()
-    scores_agg = {}
-    for i in range(num_repeat_runs):
-        scores = run_noise_removal()
-        for key in scores:
-            if key not in scores_agg:
-                scores_agg[key] = []
-            scores_agg[key].append(scores[key])
-    for key in scores_agg:
-        print("Average {}   {:.2f} {:.2f}".format(key, np.mean(scores_agg[key]), np.std(scores_agg[key])))
-    end_time = time()
-    print("Overall time: {}".format(end_time - start_time))
 
 
 def init():
@@ -70,7 +55,7 @@ def run_noise_removal():
     helper.plot(X_train, y_train, "output/step1.png")
 
     # Find noisy elements
-    nc = NoiseCorrection(X_train, y_train)
+    nc = v0.NoiseCorrection(X_train, y_train)
     nc.calculate_noise()
     noise_set0 = nc.get_noise_set(0.0)
     noise_set25 = nc.get_noise_set(0.25)

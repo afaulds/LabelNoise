@@ -31,7 +31,10 @@ class FeatureStandardizer:
                 else:
                     num_expanded_cols += len(cats[k])
         X = np.zeros((num_rows, num_expanded_cols))
-        Y = np.zeros((num_rows, num_classes))
+        if num_classes == 1:
+            y = np.zeros(num_rows)
+        else:
+            y = np.zeros((num_rows, num_classes))
 
         for i in range(num_rows):
             j = 0
@@ -39,9 +42,9 @@ class FeatureStandardizer:
                 if k == output_column:
                     m = cats[k][train_data[i][k]]
                     if num_classes == 1:
-                        Y[i, 0] = m
+                        y[i] = m
                     else:
-                        Y[i, m] = 1
+                        y[i, m] = 1
                 else:
                     if self.feature_info[k][1] != 'cat':
                         X[i, j] = train_data[i][k]
@@ -54,7 +57,7 @@ class FeatureStandardizer:
                         else:
                             X[i, j + m] = 1
                             j += len(cats[k])
-        self.__write_file('data/Agaricus.pkl', X, Y)
+        self.__write_file(save_file_name, X, y)
 
 
     def __get_output_column(self):
@@ -80,10 +83,10 @@ class FeatureStandardizer:
         return cat_count
 
 
-    def __write_file(self, name, X, Y):
+    def __write_file(self, name, X, y):
         data = {
             'X': X,
-            'Y': Y
+            'y': y
         }
         with open(name, 'wb') as outfile:
             outfile.write(pickle.dumps(data))

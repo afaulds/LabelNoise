@@ -5,14 +5,20 @@ import pickle
 
 
 def main():
-    #agaricus_data()
-    #breast_data()
+    mushroom_data()
+    krvskp_data()
+    spambase_data()
+    tictactoe_data()
+    vote_data()
+    sick_data()
+    biodeg_data()
+    ionosphere_data()
     simple_data()
     simple2_data()
     unbalanced_data(0.25)
 
 
-def agaricus_data():
+def mushroom_data():
     print("Create agaricus data")
     feature_info = [
         ('edible', 'cat', 'output'),
@@ -40,7 +46,7 @@ def agaricus_data():
         ('habitat', 'cat'),
     ]
     fs = FeatureStandardizer(feature_info, 'data/agaricus-lepiota.data')
-    fs.process('data/Agaricus.pkl')
+    fs.process('data/Mushroom.pkl')
 
 
 def simple_data():
