@@ -3,7 +3,7 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import os
 from time import time
-import NoiseCorrection_v0 as v0
+import NoiseCorrection_v3 as v3
 import NoiseCorrection_v2 as v2
 import helper
 import random
@@ -13,6 +13,9 @@ from StatCompare import StatCompare
 
 num_repeat_runs = 10
 input_data_files = [
+    "data/Simple.pkl"
+]
+[
     "data/Biodeg.pkl",
     "data/Ionosphere.pkl",
     "data/Krvskp.pkl",
@@ -26,7 +29,7 @@ input_data_files = [
     "data/Vote.pkl"
 ]
 class_a = v2.NoiseCorrection
-class_b = v0.NoiseCorrection
+class_b = v3.NoiseCorrection
 noise_percent = 0.2
 
 
