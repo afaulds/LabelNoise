@@ -4,7 +4,7 @@ import numpy as np
 import os
 from time import time
 import NoiseCorrection_v0 as v0
-import NoiseCorrection_v1 as v1
+import NoiseCorrection_v2 as v2
 import helper
 import random
 from sklearn import metrics
@@ -25,8 +25,8 @@ input_data_files = [
     "data/Unbalanced.pkl",
     "data/Vote.pkl"
 ]
-class_a = v0.NoiseCorrection
-class_b = v1.NoiseCorrection
+class_a = v2.NoiseCorrection
+class_b = v0.NoiseCorrection
 noise_percent = 0.2
 
 

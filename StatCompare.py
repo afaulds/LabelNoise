@@ -16,7 +16,6 @@ class StatCompare:
                 b.append(stat_b[i][key])
             zscore, prob = ttest_ind(a, b, equal_var=False)
             stat[key] = {
-                "zscore": zscore,
                 "p-value": prob,
                 "a-mean": np.mean(a),
                 "b-mean": np.mean(b)
