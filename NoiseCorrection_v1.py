@@ -24,6 +24,9 @@ class NoiseCorrection:
             self.Q.append(manager.list())
         self.noise_set = []
 
+    def get_name():
+        return "v1"
+
     def calculate_noise(self):
         jobs = []
         # Run all k-fold models in parallel.

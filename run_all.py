@@ -6,11 +6,13 @@ from time import time
 import NoiseCorrection_v0 as v0
 import NoiseCorrection_v1 as v1
 import helper
+import random
+from sklearn import metrics
+from StatCompare import StatCompare
 
 
-num_repeat_runs = 1 #30
-input_data_files = ["data/Simple.pkl"]
-[
+num_repeat_runs = 10
+input_data_files = [
     "data/Biodeg.pkl",
     "data/Ionosphere.pkl",
     "data/Krvskp.pkl",
@@ -23,35 +25,31 @@ input_data_files = ["data/Simple.pkl"]
     "data/Unbalanced.pkl",
     "data/Vote.pkl"
 ]
-noise_classes = {
-    "v0": v0.NoiseCorrection,
-    "v1": v1.NoiseCorrection
-}
+class_a = v0.NoiseCorrection
+class_b = v1.NoiseCorrection
 noise_percent = 0.2
 
 
 def main():
     init()
     start_time = time()
-    scores_agg = {}
     for file_name in input_data_files:
         print("Process {}...".format(file_name))
-        for noise_name in noise_classes:
-            print("Process {}...".format(noise_name))
-            noise_class = noise_classes[noise_name]
-            if noise_name not in scores_agg:
-                scores_agg[noise_name] = {}
-            for i in range(num_repeat_runs):
-                scores = run_noise_removal(file_name, noise_class)
-                for key in scores:
-                    if key not in scores_agg[noise_name]:
-                        scores_agg[noise_name][key] = []
-                    scores_agg[noise_name][key].append(scores[key])
-    print(scores_agg)
-    #        for key in scores_agg:
-    #            print("Average {}   {:.2f} {:.2f}".format(key, np.mean(scores_agg[key]), np.std(scores_agg[key])))
-    #        end_time = time()
-    #        print("Overall time: {}".format(end_time - start_time))
+
+        scores_a = []
+        scores_b = []
+
+        print("Process {}...".format(class_a.get_name()))
+        for i in range(num_repeat_runs):
+            scores_a.append(run_noise_removal(file_name, class_a))
+
+        print("Process {}...".format(class_b.get_name()))
+        for i in range(num_repeat_runs):
+            scores_b.append(run_noise_removal(file_name, class_b))
+
+        print(StatCompare.diff(scores_a, scores_b))
+    end_time = time()
+    print("Overall time: {}".format(end_time - start_time))
 
 
 def init():
@@ -85,6 +83,10 @@ def run_noise_removal(file_name, noise_class):
     # Find noisy elements
     nc = noise_class(X_train, y_train)
     nc.calculate_noise()
+    noise_score = nc.get_noise_score()
+    fpr, tpr, thresholds = metrics.roc_curve(changed, noise_score)
+    auc = metrics.auc(fpr, tpr)
+
     noise_set0 = nc.get_noise_set(0.0)
     noise_set25 = nc.get_noise_set(0.25)
     noise_set50 = nc.get_noise_set(0.5)
@@ -107,8 +109,23 @@ def run_noise_removal(file_name, noise_class):
         "no_noise_50": score_no_noise_50,
         "no_noise_75": score_no_noise_75,
         "no_noise_100": score_no_noise_100,
-        "no_noise_125": score_no_noise_125
+        "no_noise_125": score_no_noise_125,
+        "auc": auc
     }
+
+
+def clear_stats():
+    pass
+
+
+def write_stats():
+    pass
+
+
+def write_results(scores_agg):
+    print(scores_agg)
+    zscore, prob = ttest_ind(a_dist, b_dist, equal_var=False)
+    print(f"Zscore is {zscore:0.2f}, p-value is {prob:0.3f} (two tailed), {prob/2:0.3f} (one tailed)")
 
 
 if __name__ == "__main__":
