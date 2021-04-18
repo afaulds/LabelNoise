@@ -8,35 +8,50 @@ import NoiseCorrection_v1 as v1
 import helper
 
 
-num_repeat_runs = 30
-input_data = "data/Mushroom.pkl"
+num_repeat_runs = 1 #30
+input_data_files = ["data/Simple.pkl"]
 [
+    "data/Biodeg.pkl",
+    "data/Ionosphere.pkl",
+    "data/Krvskp.pkl",
+    "data/Mushroom.pkl",
+    "data/Sick.pkl",
     "data/Simple.pkl",
     "data/Simple2.pkl",
-    "data/Unbalanced.pkl"
+    "data/Spam.pkl",
+    "data/Tictactoe.pkl",
+    "data/Unbalanced.pkl",
+    "data/Vote.pkl"
 ]
+noise_classes = {
+    "v0": v0.NoiseCorrection,
+    "v1": v1.NoiseCorrection
+}
 noise_percent = 0.2
 
 
 def main():
-    print(run_noise_removal())
-
-
-def main1():
-    # Loop through data and noise correction algorithms.
-    start_time = time()
     init()
+    start_time = time()
     scores_agg = {}
-    for i in range(num_repeat_runs):
-        scores = run_noise_removal()
-        for key in scores:
-            if key not in scores_agg:
-                scores_agg[key] = []
-            scores_agg[key].append(scores[key])
-    for key in scores_agg:
-        print("Average {}   {:.2f} {:.2f}".format(key, np.mean(scores_agg[key]), np.std(scores_agg[key])))
-    end_time = time()
-    print("Overall time: {}".format(end_time - start_time))
+    for file_name in input_data_files:
+        print("Process {}...".format(file_name))
+        for noise_name in noise_classes:
+            print("Process {}...".format(noise_name))
+            noise_class = noise_classes[noise_name]
+            if noise_name not in scores_agg:
+                scores_agg[noise_name] = {}
+            for i in range(num_repeat_runs):
+                scores = run_noise_removal(file_name, noise_class)
+                for key in scores:
+                    if key not in scores_agg[noise_name]:
+                        scores_agg[noise_name][key] = []
+                    scores_agg[noise_name][key].append(scores[key])
+    print(scores_agg)
+    #        for key in scores_agg:
+    #            print("Average {}   {:.2f} {:.2f}".format(key, np.mean(scores_agg[key]), np.std(scores_agg[key])))
+    #        end_time = time()
+    #        print("Overall time: {}".format(end_time - start_time))
 
 
 def init():
@@ -44,10 +59,9 @@ def init():
         os.makedirs('output')
 
 
-def run_noise_removal():
-    print("-------------------------------------")
+def run_noise_removal(file_name, noise_class):
     # Read from standardized file.
-    with open(input_data, "rb") as infile:
+    with open(file_name, "rb") as infile:
         data = pickle.loads(infile.read())
 
     # Create training and test set.
@@ -69,7 +83,7 @@ def run_noise_removal():
     score_no_noise_perfect = helper.evaluate_score(X_train, y_train, X_test, y_test, noise_set)
 
     # Find noisy elements
-    nc = v0.NoiseCorrection(X_train, y_train)
+    nc = noise_class(X_train, y_train)
     nc.calculate_noise()
     noise_set0 = nc.get_noise_set(0.0)
     noise_set25 = nc.get_noise_set(0.25)
