@@ -12,11 +12,11 @@ import helper
 import random
 from sklearn import metrics
 from StatCompare import StatCompare
-from Cache import Cache
+from util import Cache
 import pprint
 
 
-num_repeat_runs = 20
+num_repeat_runs = 40
 input_data_files = [
     "data/Biodeg.pkl",
     "data/Ionosphere.pkl",
@@ -30,8 +30,13 @@ input_data_files = [
     "data/Unbalanced.pkl",
     "data/Vote.pkl"
 ]
-class_a = v0.NoiseCorrection
-class_b = v1.NoiseCorrection
+noise_classes = [
+    v0.NoiseCorrection,
+    v1.NoiseCorrection,
+    v2.NoiseCorrection,
+    v3.NoiseCorrection,
+    v4.NoiseCorrection,
+]
 noise_percent = 0.2
 
 
@@ -41,25 +46,14 @@ def main():
     for file_name in input_data_files:
         print("Process {}...".format(file_name))
 
-        scores_a = []
-        scores_b = []
+        for noise_class in noise_classes:
+            print("Process {}...".format(noise_class.get_name()))
+            for i in range(num_repeat_runs):
+                print("Process [{}/{}]...".format(i + 1, num_repeat_runs))
 
-        print("Process {}...".format(class_a.get_name()))
-        for i in range(num_repeat_runs):
-            print("Process [{}/{}]...".format(i + 1, num_repeat_runs))
+                key = (i, noise_class.get_name(), file_name)
+                score = Cache.process(key, run_noise_removal, file_name, noise_class)
 
-            key = (i, class_a.get_name(), file_name)
-            score = Cache.process(key, run_noise_removal, file_name, class_a)
-            scores_a.append(score)
-
-        print("Process {}...".format(class_b.get_name()))
-        for i in range(num_repeat_runs):
-            print("Process [{}/{}]...".format(i + 1, num_repeat_runs))
-            key = (i, class_b.get_name(), file_name)
-            score = Cache.process(key, run_noise_removal, file_name, class_b)
-            scores_b.append(score)
-
-        pprint.pprint(StatCompare.diff(scores_a, scores_b))
     end_time = time()
     print("Overall time: {}".format(end_time - start_time))
 

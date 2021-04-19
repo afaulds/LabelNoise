@@ -22,6 +22,11 @@ class Cache:
         else:
             return None
 
+    def delete(key):
+        file_name = Cache.__get_file_name(key)
+        if Cache.__key_exists(file_name):
+            os.remove(file_name)
+
     def __get_file_name(key):
         clean_key = hashlib.md5(str(key).encode()).hexdigest()
         a = clean_key[0]
