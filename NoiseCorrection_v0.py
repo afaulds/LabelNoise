@@ -44,14 +44,11 @@ class NoiseCorrection:
             print("*", end="", flush=True)
         print("All complete.", flush=True)
 
-        # Calculate Be_total
-        Be_total = np.sum(self.Be)
-
         # Calculate r (noise) and theta (threshold)
         self.r = np.zeros(len(self.y))
         self.theta = 0
         for i in range(len(self.y)):
-            self.r[i] = random.rand()
+            self.r[i] = random.random()
             if self.Bc[i] >= self.M / 2:
                 self.theta += 1
 
@@ -80,7 +77,5 @@ class NoiseCorrection:
             i = test_index[p]
             c = y_prob[p][0]
             d = y_prob[p][1]
-            if c > 0.0 and d > 0.0:
-                self.Be[i] -= c * math.log2(c) + d * math.log2(d)
             if self.y[i] != y_scores[p]:
                 self.Bc[i] += 1
