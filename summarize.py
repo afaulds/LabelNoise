@@ -11,7 +11,7 @@ from util import Cache
 from util import Grid
 
 
-num_repeat_runs = 20
+num_repeat_runs = 40
 input_data_files = [
     "data/Biodeg.pkl",
     "data/Ionosphere.pkl",
@@ -45,8 +45,11 @@ def main():
             for i in range(num_repeat_runs):
                 key = (i, noise_name, file_name)
                 score = Cache.get(key)
-                scores.append(score)
-            grid.set(file_name, noise_name, StatCompare.mean(scores)['auc'])
+                if score is not None:
+                    scores.append(score)
+                else:
+                    print("Missing - {}".format(key))
+            grid.set(file_name, noise_name, StatCompare.mean(scores)['no_noise_100'])
     grid.save("test.txt")
     end_time = time()
     print("Overall time: {}".format(end_time - start_time))
