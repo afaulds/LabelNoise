@@ -33,7 +33,7 @@ class NoiseCorrection:
         # Run all k-fold models in parallel.
         for m in range(self.M):
             all_index = np.array(range(len(self.y)))
-            kmeans = KMeans(n_clusters=self.K, random_state=0).fit(self.X)
+            kmeans = KMeans(n_clusters=self.K).fit(self.X)
             for i in range(self.K):
                 train_index = all_index[kmeans.labels_ != i]
                 test_index = all_index[kmeans.labels_ == i]
