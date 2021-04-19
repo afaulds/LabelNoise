@@ -7,6 +7,8 @@ from sklearn.cluster import KMeans
 
 class NoiseCorrection:
     """
+    Variation of how entroy and disagreement is calculated.
+    PLUS
     Change kfold to kmeans.
     """
 
@@ -20,11 +22,11 @@ class NoiseCorrection:
         # Thread safe objects.
         manager = Manager()
         self.Bc = manager.list(np.zeros(len(y)))
-        self.Be = manager.list(np.zeros(len(y)))
+        self.Bx = manager.list(np.zeros(len(y)))
         self.noise_set = []
 
     def get_name():
-        return "v3"
+        return "v4"
 
     def calculate_noise(self):
         jobs = []
@@ -47,14 +49,11 @@ class NoiseCorrection:
             print("*", end="", flush=True)
         print("All complete.", flush=True)
 
-        # Calculate Be_total
-        Be_total = np.sum(self.Be)
-
         # Calculate r (noise) and theta (threshold)
         self.r = np.zeros(len(self.y))
         self.theta = 0
         for i in range(len(self.y)):
-            self.r[i] = self.Bc[i] + (1 - self.Be[i] / Be_total)
+            self.r[i] = self.Bx[i]
             if self.Bc[i] >= self.M / 2:
                 self.theta += 1
 
@@ -83,7 +82,11 @@ class NoiseCorrection:
             i = test_index[p]
             c = y_prob[p][0]
             d = y_prob[p][1]
+            neg_entropy = 1.0
             if c > 0.0 and d > 0.0:
-                self.Be[i] -= c * math.log2(c) + d * math.log2(d)
+                neg_entropy = 1 + c * math.log2(c) + d * math.log2(d)
             if self.y[i] != y_scores[p]:
                 self.Bc[i] += 1
+                self.Bx[i] += 0.5 + 0.5 * neg_entropy
+            else:
+                self.Bx[i] += 0.5 - 0.5 * neg_entropy

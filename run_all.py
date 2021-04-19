@@ -9,18 +9,16 @@ import helper
 import random
 from sklearn import metrics
 from StatCompare import StatCompare
+from Cache import Cache
 
 
 num_repeat_runs = 10
 input_data_files = [
-    "data/Simple.pkl"
-]
-[
     "data/Biodeg.pkl",
     "data/Ionosphere.pkl",
     "data/Krvskp.pkl",
     "data/Mushroom.pkl",
-    "data/Sick.pkl",
+#    "data/Sick.pkl",
     "data/Simple.pkl",
     "data/Simple2.pkl",
     "data/Spam.pkl",
@@ -44,11 +42,15 @@ def main():
 
         print("Process {}...".format(class_a.get_name()))
         for i in range(num_repeat_runs):
-            scores_a.append(run_noise_removal(file_name, class_a))
+            key = (i, class_a.get_name(), file_name)
+            score = Cache.process(key, run_noise_removal, file_name, class_a)
+            scores_a.append(score)
 
         print("Process {}...".format(class_b.get_name()))
         for i in range(num_repeat_runs):
-            scores_b.append(run_noise_removal(file_name, class_b))
+            key = (i, class_b.get_name(), file_name)
+            score = Cache.process(key, run_noise_removal, file_name, class_b)
+            scores_b.append(score)
 
         print(StatCompare.diff(scores_a, scores_b))
     end_time = time()
