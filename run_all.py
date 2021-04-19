@@ -3,16 +3,20 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import os
 from time import time
-import NoiseCorrection_v3 as v3
+import NoiseCorrection_v0 as v0
+import NoiseCorrection_v1 as v1
 import NoiseCorrection_v2 as v2
+import NoiseCorrection_v3 as v3
+import NoiseCorrection_v4 as v4
 import helper
 import random
 from sklearn import metrics
 from StatCompare import StatCompare
 from Cache import Cache
+import pprint
 
 
-num_repeat_runs = 10
+num_repeat_runs = 20
 input_data_files = [
     "data/Biodeg.pkl",
     "data/Ionosphere.pkl",
@@ -26,8 +30,8 @@ input_data_files = [
     "data/Unbalanced.pkl",
     "data/Vote.pkl"
 ]
-class_a = v2.NoiseCorrection
-class_b = v3.NoiseCorrection
+class_a = v0.NoiseCorrection
+class_b = v1.NoiseCorrection
 noise_percent = 0.2
 
 
@@ -42,17 +46,20 @@ def main():
 
         print("Process {}...".format(class_a.get_name()))
         for i in range(num_repeat_runs):
+            print("Process [{}/{}]...".format(i + 1, num_repeat_runs))
+
             key = (i, class_a.get_name(), file_name)
             score = Cache.process(key, run_noise_removal, file_name, class_a)
             scores_a.append(score)
 
         print("Process {}...".format(class_b.get_name()))
         for i in range(num_repeat_runs):
+            print("Process [{}/{}]...".format(i + 1, num_repeat_runs))
             key = (i, class_b.get_name(), file_name)
             score = Cache.process(key, run_noise_removal, file_name, class_b)
             scores_b.append(score)
 
-        print(StatCompare.diff(scores_a, scores_b))
+        pprint.pprint(StatCompare.diff(scores_a, scores_b))
     end_time = time()
     print("Overall time: {}".format(end_time - start_time))
 
@@ -117,20 +124,6 @@ def run_noise_removal(file_name, noise_class):
         "no_noise_125": score_no_noise_125,
         "auc": auc
     }
-
-
-def clear_stats():
-    pass
-
-
-def write_stats():
-    pass
-
-
-def write_results(scores_agg):
-    print(scores_agg)
-    zscore, prob = ttest_ind(a_dist, b_dist, equal_var=False)
-    print(f"Zscore is {zscore:0.2f}, p-value is {prob:0.3f} (two tailed), {prob/2:0.3f} (one tailed)")
 
 
 if __name__ == "__main__":
