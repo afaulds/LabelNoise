@@ -8,6 +8,7 @@ import NoiseCorrection_v1 as v1
 import NoiseCorrection_v2 as v2
 import NoiseCorrection_v3 as v3
 import NoiseCorrection_v4 as v4
+import NoiseCorrection_v5 as v5
 import helper
 import random
 from sklearn import metrics
@@ -36,6 +37,7 @@ noise_classes = [
     v2.NoiseCorrection,
     v3.NoiseCorrection,
     v4.NoiseCorrection,
+    v5.NoiseCorrection,
 ]
 noise_percent = 0.2
 
