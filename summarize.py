@@ -7,6 +7,8 @@ import NoiseCorrection_v2 as v2
 import NoiseCorrection_v3 as v3
 import NoiseCorrection_v4 as v4
 import NoiseCorrection_v5 as v5
+import NoiseCorrection_v6 as v6
+import NoiseCorrection_v7 as v7
 from StatCompare import StatCompare
 from util import Cache
 from util import Grid
@@ -33,11 +35,13 @@ noise_types = [
     v3.NoiseCorrection.get_name(),
     v4.NoiseCorrection.get_name(),
     v5.NoiseCorrection.get_name(),
+    v6.NoiseCorrection.get_name(),
+    v7.NoiseCorrection.get_name(),
 ]
+stat_key = "auc"
 
 
 def main():
-    init()
     start_time = time()
     grid = Grid()
     grid.load("test.txt")
@@ -52,19 +56,14 @@ def main():
                 else:
                     print("Missing - {}".format(key))
             val = StatCompare.mean(scores)
-            if 'auc' in val:
-                val = val['no_noise_50']
+            if stat_key in val:
+                val = val[stat_key]
             else:
                 val = ""
             grid.set(file_name, noise_name, val)
     grid.save("test.txt")
     end_time = time()
     print("Overall time: {}".format(end_time - start_time))
-
-
-def init():
-    if not os.path.exists('output'):
-        os.makedirs('output')
 
 
 if __name__ == "__main__":
