@@ -6,6 +6,8 @@ class StatCompare:
 
     def mean(stat_a):
         stat = {}
+        if len(stat_a) == 0:
+            return {}
         keys = list(stat_a[0].keys())
         for key in keys:
             a = []

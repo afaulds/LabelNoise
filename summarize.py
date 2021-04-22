@@ -51,7 +51,12 @@ def main():
                     scores.append(score)
                 else:
                     print("Missing - {}".format(key))
-            grid.set(file_name, noise_name, StatCompare.mean(scores)['auc'])
+            val = StatCompare.mean(scores)
+            if 'auc' in val:
+                val = val['no_noise_50']
+            else:
+                val = ""
+            grid.set(file_name, noise_name, val)
     grid.save("test.txt")
     end_time = time()
     print("Overall time: {}".format(end_time - start_time))
