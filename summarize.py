@@ -63,6 +63,7 @@ def main():
             grid.set(file_name, noise_name, val)
     grid.save("test.txt")
     end_time = time()
+    print("Stats for {}".format(stat_key))
     print("Overall time: {}".format(end_time - start_time))
 
 

@@ -40,7 +40,7 @@ noise_classes = [
     v3.NoiseCorrection,
     v4.NoiseCorrection,
     v5.NoiseCorrection,
-#    v6.NoiseCorrection,
+    v6.NoiseCorrection,
     v7.NoiseCorrection,
 ]
 noise_percent = 0.2
@@ -49,16 +49,19 @@ noise_percent = 0.2
 def main():
     init()
     start_time = time()
+    z = 0
+    total = num_repeat_runs * len(input_data_files) * len(noise_classes)
     for file_name in input_data_files:
         print("Process {}...".format(file_name))
 
         for noise_class in noise_classes:
             print("Process {}...".format(noise_class.get_name()))
             for i in range(num_repeat_runs):
-                print("Process [{}/{}]...".format(i + 1, num_repeat_runs))
+                print("Process [{}/{}]...".format(z + 1, total))
 
                 key = (i, noise_class.get_name(), file_name)
                 score = Cache.process(key, run_noise_removal, file_name, noise_class)
+                z += 1
 
     end_time = time()
     print("Overall time: {}".format(end_time - start_time))
