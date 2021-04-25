@@ -74,13 +74,13 @@ class NoiseCorrection:
         kmeans = Kmeans(d=X_train.shape[1], k=self.C, niter=300, verbose=False)
         kmeans.train(X_train.astype('float32'))
         D, I = kmeans.index.search(X_train.astype('float32'), 1)
-        cluster_id = list(map(lambda x:x[0], I))
+        cluster_id = np.array(list(map(lambda x:x[0], I)))
         cluster_prob = np.zeros(self.C)
         for i in range(self.C):
             if np.sum(cluster_id == i) > 0:
                 cluster_prob[i] = np.mean(y_train[cluster_id == i])
         D, I = kmeans.index.search(X_test.astype('float32'), 1)
-        cluster_id = list(map(lambda x:x[0], I))
+        cluster_id = np.array(list(map(lambda x:x[0], I)))
         y_prob = np.array(list(map(lambda x:cluster_prob[x], cluster_id)))
         y_scores = y_prob > 0.5
         for p in range(len(test_index)):
