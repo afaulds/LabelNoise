@@ -3,7 +3,8 @@ from multiprocessing import Process, Manager
 import numpy as np
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import KFold
-from sklearn.cluster import KMeans
+#from sklearn.cluster import KMeans
+from faiss import Kmeans
 
 
 class NoiseCorrection:
@@ -14,7 +15,7 @@ class NoiseCorrection:
     def __init__(self, X, y):
         self.M = 5 # Number of scores per item.
         self.K = 10 # Number of folds.
-        self.C = 30
+        self.C = 2000
         self.X = X
         self.y = y
         self.r = None
@@ -68,12 +69,18 @@ class NoiseCorrection:
         y_train = self.y[train_index]
         X_test = self.X[test_index]
         y_test = self.y[test_index]
-        kmeans = KMeans(n_clusters=self.C).fit(X_train)
+        if len(y_train) / 4.0 < self.C:
+            self.C = int(len(y_train) / 4.0)
+        kmeans = Kmeans(d=X_train.shape[1], k=self.C, niter=300, verbose=False)
+        kmeans.train(X_train.astype('float32'))
+        D, I = kmeans.index.search(X_train.astype('float32'), 1)
+        cluster_id = list(map(lambda x:x[0], I))
         cluster_prob = np.zeros(self.C)
         for i in range(self.C):
-            if np.sum(kmeans.labels_ == i) > 0:
-                cluster_prob[i] = np.mean(y_train[kmeans.labels_ == i])
-        cluster_id = kmeans.predict(X_test)
+            if np.sum(cluster_id == i) > 0:
+                cluster_prob[i] = np.mean(y_train[cluster_id == i])
+        D, I = kmeans.index.search(X_test.astype('float32'), 1)
+        cluster_id = list(map(lambda x:x[0], I))
         y_prob = np.array(list(map(lambda x:cluster_prob[x], cluster_id)))
         y_scores = y_prob > 0.5
         for p in range(len(test_index)):
