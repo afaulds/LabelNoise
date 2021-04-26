@@ -37,8 +37,9 @@ noise_types = [
     v5.NoiseCorrection.get_name(),
     v6.NoiseCorrection.get_name(),
     v7.NoiseCorrection.get_name(),
+    v8.NoiseCorrection.get_name(),
 ]
-stat_key = "auc"
+stat_key = "no_noise_100"
 
 
 def main():
@@ -55,6 +56,9 @@ def main():
                     scores.append(score)
                 else:
                     print("Missing - {}".format(key))
+            if file_name == "data/Krvskp.pkl" and noise_name == "v7":
+                for score in scores:
+                    print(score["no_noise_100"])
             val = StatCompare.mean(scores)
             if stat_key in val:
                 val = val[stat_key]
