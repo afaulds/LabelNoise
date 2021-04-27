@@ -56,7 +56,7 @@ def vote_data():
 
 def sick_data():
     print('Create sick')
-    fs = FeatureStandardizer('data/ann-train.struct', 'data/ann-train.data')
+    fs = FeatureStandardizer('data/sick.struct', 'data/sick_csv.csv')
     fs.process('data/Sick.pkl')
 
 

@@ -26,7 +26,7 @@ input_data_files = [
     "data/Ionosphere.pkl",
     "data/Krvskp.pkl",
     "data/Mushroom.pkl",
-#    "data/Sick.pkl",
+    "data/Sick.pkl",
     "data/Simple.pkl",
     "data/Simple2.pkl",
     "data/Spam.pkl",
@@ -63,6 +63,7 @@ def main():
 
                 key = (i, noise_class.get_name(), file_name)
                 score = Cache.process(key, run_noise_removal, file_name, noise_class)
+                print(score['auc'])
                 z += 1
 
     end_time = time()

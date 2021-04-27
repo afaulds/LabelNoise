@@ -50,7 +50,10 @@ class FeatureStandardizer:
                         y[i, m] = 1
                 else:
                     if self.feature_info[k][1] != 'cat':
-                        X[i, j] = train_data[i][k]
+                        try:
+                            X[i, j] = train_data[i][k]
+                        except:
+                            pass
                         j += 1
                     else:
                         m = cats[k][train_data[i][k]]

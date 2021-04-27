@@ -21,7 +21,7 @@ input_data_files = [
     "data/Ionosphere.pkl",
     "data/Krvskp.pkl",
     "data/Mushroom.pkl",
-#    "data/Sick.pkl",
+    "data/Sick.pkl",
     "data/Simple.pkl",
     "data/Simple2.pkl",
     "data/Spam.pkl",

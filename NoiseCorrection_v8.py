@@ -3,7 +3,6 @@ from multiprocessing import Process, Manager
 import numpy as np
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import KFold
-#from sklearn.cluster import KMeans
 from faiss import Kmeans
 
 
@@ -72,7 +71,7 @@ class NoiseCorrection:
         kmeans = Kmeans(
             d=X_train.shape[1],
             k=self.C,
-            niter = 300,
+            niter = 30,
             min_points_per_centroid = 1,
             max_points_per_centroid = 10000000
         )
