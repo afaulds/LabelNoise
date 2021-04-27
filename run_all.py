@@ -63,7 +63,6 @@ def main():
 
                 key = (i, noise_class.get_name(), file_name)
                 score = Cache.process(key, run_noise_removal, file_name, noise_class)
-                print(score)
                 z += 1
 
     end_time = time()

@@ -16,6 +16,18 @@ class StatCompare:
             stat[key] = np.mean(a)
         return stat
 
+    def std(stat_a):
+        stat = {}
+        if len(stat_a) == 0:
+            return {}
+        keys = list(stat_a[0].keys())
+        for key in keys:
+            a = []
+            for i in range(len(stat_a)):
+                a.append(stat_a[i][key])
+            stat[key] = np.std(a)
+        return stat
+
     def diff(stat_a, stat_b):
         stat = {}
         keys = list(stat_a[0].keys())
