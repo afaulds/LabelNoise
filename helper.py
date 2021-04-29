@@ -54,14 +54,18 @@ def evaluate_score(X_train, y_train, X_test, y_test, noise_set):
 
 
 def train_and_score(X_train, y_train, X_test, y_test):
-    clf = GradientBoostingClassifier(
-        n_estimators=10,
-        learning_rate=0.8,
-        max_depth=5
-    ).fit(X_train, y_train)
-    y_scores = clf.predict_proba(X_test)
-    y_predict = np.zeros(len(y_scores))
-    for i in range(len(y_scores)):
-        y_predict[i] = y_scores[i][1]
+    if len(np.unique(y_train)) > 1:
+        clf = GradientBoostingClassifier(
+            n_estimators=10,
+            learning_rate=0.8,
+            max_depth=5
+        ).fit(X_train, y_train)
+        y_scores = clf.predict_proba(X_test)
+        y_predict = np.zeros(len(y_scores))
+        for i in range(len(y_scores)):
+            y_predict[i] = y_scores[i][1]
+    else:
+        y_scores = np.ones(len(y_test)) * np.unique(y_train)[0]
+        y_predict = y_scores
     fpr, tpr, thresholds = metrics.roc_curve(y_test, y_predict)
     return metrics.auc(fpr, tpr)
