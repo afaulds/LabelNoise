@@ -65,6 +65,7 @@ def train_and_score(X_train, y_train, X_test, y_test):
         for i in range(len(y_scores)):
             y_predict[i] = y_scores[i][1]
     else:
+        print("EVALUATE ERROR")
         y_scores = np.ones(len(y_test)) * np.unique(y_train)[0]
         y_predict = y_scores
     fpr, tpr, thresholds = metrics.roc_curve(y_test, y_predict)

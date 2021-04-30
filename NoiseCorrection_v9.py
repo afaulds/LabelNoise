@@ -13,7 +13,7 @@ class NoiseCorrection:
     def __init__(self, X, y):
         self.M = 5 # Number of scores per item.
         self.K = 10 # Number of folds.
-        self.C = 40
+        self.C = 10
         self.X = X
         self.y = y
         self.r = None
@@ -68,16 +68,15 @@ class NoiseCorrection:
         X_test = self.X[test_index]
         y_test = self.y[test_index]
         clf = KNeighborsClassifier(
+            weights='distance',
             n_neighbors=self.C
         ).fit(X_train, y_train)
         y_scores = clf.predict(X_test)
         y_prob = clf.predict_proba(X_test)
-        y_prob = list(map(lambda x: x[1], y_prob))
-
         for p in range(len(test_index)):
             i = test_index[p]
-            c = y_prob[p]
-            d = 1.0 - c
+            c = y_prob[p][0]
+            d = y_prob[p][1]
             neg_entropy = 1.0
             if c > 0.0 and d > 0.0:
                 neg_entropy = 1 + c * math.log2(c) + d * math.log2(d)
