@@ -54,6 +54,7 @@ class NoiseCorrection:
             self.r[i] = self.Bc[i] + (1 - self.Be[i] / Be_total)
             if self.Bc[i] >= self.M / 2:
                 self.theta += 1
+        print(self.theta)
 
     def get_noise_score(self):
         return self.r

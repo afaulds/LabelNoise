@@ -18,33 +18,15 @@ import random
 from sklearn import metrics
 from StatCompare import StatCompare
 from util import Cache
-import pprint
+import matplotlib.pyplot as plt
 
 
-num_repeat_runs = 40
+num_repeat_runs = 4
 input_data_files = [
-    "data/Biodeg.pkl",
-    "data/Ionosphere.pkl",
-    "data/Krvskp.pkl",
-    "data/Mushroom.pkl",
-    "data/Sick.pkl",
-    "data/Simple.pkl",
-    "data/Simple2.pkl",
     "data/Spam.pkl",
-    "data/Tictactoe.pkl",
-    "data/Unbalanced.pkl",
-    "data/Vote.pkl"
 ]
 noise_classes = [
-    v0.NoiseCorrection,
     v1.NoiseCorrection,
-    v2.NoiseCorrection,
-    v3.NoiseCorrection,
-    v4.NoiseCorrection,
-    v5.NoiseCorrection,
-    v6.NoiseCorrection,
-    v7.NoiseCorrection,
-    v8.NoiseCorrection,
     v9.NoiseCorrection,
 ]
 noise_percent = 0.2
@@ -64,7 +46,7 @@ def main():
                 print("Process [{}/{}]...".format(z + 1, total))
 
                 key = (i, noise_class.get_name(), file_name)
-                score = Cache.process(key, run_noise_removal, file_name, noise_class)
+                score = run_noise_removal(file_name, noise_class)
                 print(score['auc'])
                 z += 1
 
@@ -106,6 +88,8 @@ def run_noise_removal(file_name, noise_class):
     noise_score = nc.get_noise_score()
     fpr, tpr, thresholds = metrics.roc_curve(changed, noise_score)
     auc = metrics.auc(fpr, tpr)
+    #plt.plot(fpr,tpr)
+    #plt.show()
 
     noise_set0 = nc.get_noise_set(0.0)
     noise_set25 = nc.get_noise_set(0.25)
