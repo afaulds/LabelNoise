@@ -3,7 +3,7 @@ import numpy as np
 import random
 from sklearn import metrics
 from sklearn.ensemble import GradientBoostingClassifier
-
+from sklearn.metrics import fbeta_score
 
 
 def randomize(percent, y):
@@ -68,5 +68,4 @@ def train_and_score(X_train, y_train, X_test, y_test):
         print("EVALUATE ERROR")
         y_scores = np.ones(len(y_test)) * np.unique(y_train)[0]
         y_predict = y_scores
-    fpr, tpr, thresholds = metrics.roc_curve(y_test, y_predict)
-    return metrics.auc(fpr, tpr)
+    return fbeta_score(y_test, y_predict)
