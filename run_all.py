@@ -13,6 +13,7 @@ import NoiseCorrection_v6 as v6
 import NoiseCorrection_v7 as v7
 import NoiseCorrection_v8 as v8
 import NoiseCorrection_v9 as v9
+import NoiseCorrection_v10 as v10
 import helper
 import random
 from sklearn import metrics
@@ -44,8 +45,9 @@ noise_classes = [
 #    v5.NoiseCorrection,
 #    v6.NoiseCorrection,
 #    v7.NoiseCorrection,
-    v8.NoiseCorrection,
+#    v8.NoiseCorrection,
     v9.NoiseCorrection,
+    v10.NoiseCorrection,
 ]
 noise_percent = 0.2
 
@@ -113,6 +115,8 @@ def run_noise_removal(file_name, noise_class):
     noise_set75 = nc.get_noise_set(0.75)
     noise_set100 = nc.get_noise_set()
     noise_set125 = nc.get_noise_set(1.25)
+    percent_remove = 1.0 * len(noise_set100) / len(y_train)
+    percent_remove_positive = 1.0 * sum(y_train[noise_set100]) / len(noise_set100)
 
     score_no_noise_0 = helper.evaluate_score(X_train, y_train, X_test, y_test, noise_set0)
     score_no_noise_25 = helper.evaluate_score(X_train, y_train, X_test, y_test, noise_set25)
@@ -130,7 +134,9 @@ def run_noise_removal(file_name, noise_class):
         "no_noise_75": score_no_noise_75,
         "no_noise_100": score_no_noise_100,
         "no_noise_125": score_no_noise_125,
-        "auc": auc
+        "auc": auc,
+        "percent_remove": percent_remove,
+        "percent_remove_positive": percent_remove_positive
     }
 
 
