@@ -11,6 +11,7 @@ import NoiseCorrection_v6 as v6
 import NoiseCorrection_v7 as v7
 import NoiseCorrection_v8 as v8
 import NoiseCorrection_v9 as v9
+import NoiseCorrection_v10 as v10
 from StatCompare import StatCompare
 from util import Cache
 from util import Grid
@@ -34,13 +35,14 @@ noise_types = [
     v0.NoiseCorrection.get_name(),
     v1.NoiseCorrection.get_name(),
     v2.NoiseCorrection.get_name(),
-    v3.NoiseCorrection.get_name(),
-    v4.NoiseCorrection.get_name(),
-    v5.NoiseCorrection.get_name(),
-    v6.NoiseCorrection.get_name(),
-    v7.NoiseCorrection.get_name(),
-    v8.NoiseCorrection.get_name(),
+    #v3.NoiseCorrection.get_name(),
+    #v4.NoiseCorrection.get_name(),
+    #v5.NoiseCorrection.get_name(),
+    #v6.NoiseCorrection.get_name(),
+    #v7.NoiseCorrection.get_name(),
+    #v8.NoiseCorrection.get_name(),
     v9.NoiseCorrection.get_name(),
+    v10.NoiseCorrection.get_name(),
 ]
 stat_key = "auc"
 

@@ -68,6 +68,7 @@ class FeatureStandardizer:
         print("Num pos: {}".format(sum(y)))
         print("Num neg: {}".format(sum(1-y)))
         print("")
+        self.__rescale(X)
         self.__write_file(save_file_name, X, y)
 
     def __read_struct(self):
@@ -95,6 +96,16 @@ class FeatureStandardizer:
             else:
                 cat_count.append({0})
         return cat_count
+
+    def __rescale(self, X):
+        min_vals = np.amin(X, 0)
+        max_vals = np.amax(X, 0)
+        for i in range(len(X)):
+            for j in range(len(X[0])):
+                if max_vals[j] - min_vals[j] > 0.00001:
+                    X[i][j] = (X[i][j] - min_vals[j]) / (max_vals[j] - min_vals[j])
+                else:
+                    X[i][j] = (X[i][j] - min_vals[j]) / 0.00001
 
     def __write_file(self, name, X, y):
         data = {
