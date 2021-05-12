@@ -13,7 +13,7 @@ class NoiseCorrection:
     def __init__(self, X, y):
         self.M = 5 # Number of scores per item.
         self.K = 10 # Number of folds.
-        self.C = 10
+        self.C = 20
         self.X = X
         self.y = y
         self.r = None
